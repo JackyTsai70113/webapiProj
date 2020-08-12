@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace webapiProject.Models {
@@ -212,10 +215,24 @@ namespace webapiProject.Models {
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-        //public override async Task<int> SaveChangesAsync(CancellationToken ct = new CancellationToken()) {
-        //    var ddd = this;
-        //    int result = await Task.FromResult<int>(1);
-        //    return result;
-        //}
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {
+            var entityEntryList = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified).ToList();
+
+            // Set DateModified DateTime.Now
+            DateTime now = DateTime.Now;
+            foreach (EntityEntry entry in entityEntryList) {
+                if (typeof(Course).IsInstanceOfType(entry.Entity)) {
+                    var course = (Course)entry.Entity;
+                    course.DateModified = now;
+                } else if (typeof(Department).IsInstanceOfType(entry.Entity)) {
+                    var department = (Department)entry.Entity;
+                    department.DateModified = now;
+                } else if (typeof(Person).IsInstanceOfType(entry.Entity)) {
+                    var person = (Person)entry.Entity;
+                    person.DateModified = now;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

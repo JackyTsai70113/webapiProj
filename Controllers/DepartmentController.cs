@@ -58,10 +58,12 @@ namespace webapiProject.Controllers {
             try {
                 //await _context.SaveChangesAsync();
 
-                var sql = $"EXEC [dbo].[Department_Update] @DepartmentId, " +
-                    $"@Name, @Budget, @StartDate, @InstructorID, @RowVersion_Original";
+                var sql =
+                    $"EXEC [dbo].[Department_Update] " +
+                    $"@DepartmentId, @Name, @Budget, " +
+                    $"@StartDate, @InstructorID, @RowVersion_Original";
                 var parameters = new List<SqlParameter> {
-                    new SqlParameter("@DepartmentId", department.DepartmentId),
+                    new SqlParameter("@DepartmentId", id),
                     new SqlParameter("@Name", department.Name),
                     new SqlParameter("@Budget", department.Budget),
                     new SqlParameter("@StartDate", department.StartDate),
@@ -69,6 +71,11 @@ namespace webapiProject.Controllers {
                     new SqlParameter("@RowVersion_Original", department.RowVersion)
                 };
                 _context.Database.ExecuteSqlRaw(sql, parameters);
+
+                // Modified
+                department = await _context.Department.FindAsync(id);
+                _context.Entry(department).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
             } catch (DbUpdateConcurrencyException) {
                 if (!DepartmentExists(id)) {
                     return NotFound();
