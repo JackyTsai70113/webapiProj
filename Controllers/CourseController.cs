@@ -97,6 +97,49 @@ namespace webapiProject.Controllers {
             return course;
         }
 
+        // GET: api/Course/Student
+        [HttpGet("student")]
+        public async Task<ActionResult<List<VwCourseStudents>>> GetVwCourseStudents() {
+            string sql =
+                $"SELECT TOP (1000) " +
+                $"  [DepartmentID], [DepartmentName], [CourseID], " +
+                $"  [CourseTitle], [StudentID], [StudentName] " +
+                $"FROM [dbo].[vwCourseStudents]";
+
+            var vwCourseStudents = _context
+                .VwCourseStudents
+                .FromSqlRaw(sql).ToList();
+
+            if (!vwCourseStudents.Any()) {
+                return NoContent();
+            }
+
+            return vwCourseStudents;
+        }
+
+        // GET: api/Course/Student/Count
+        [HttpGet("student/count")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<VwCourseStudentCount>>> GetVwCourseStudentCount() {
+            string sql =
+                $"SELECT TOP (1000) " +
+                $"  [DepartmentID], [Name], [CourseID], " +
+                $"  [Title], [StudentCount] " +
+                $"FROM [dbo].[vwCourseStudentCount]";
+
+            var vwCourseStudentCount = _context
+                .VwCourseStudentCount
+                .FromSqlRaw(sql).ToList();
+
+            if (!vwCourseStudentCount.Any()) {
+                return NoContent();
+            }
+
+            return vwCourseStudentCount;
+        }
+
         private bool CourseExists(int id) {
             return _context.Course.Any(e => e.CourseId == id);
         }
