@@ -18,6 +18,7 @@ D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.CodeAnal
 D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.Data.SqlClient.dll
 D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.dll
 D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Abstractions.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Design.dll
 D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Relational.dll
 D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.SqlServer.dll
 D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Caching.Abstractions.dll
@@ -124,4 +125,17 @@ D:\ASP.NET_Core_Web_API\webapiProject\obj\Debug\netcoreapp3.1\staticwebassets\we
 D:\ASP.NET_Core_Web_API\webapiProject\obj\Debug\netcoreapp3.1\webapiProject.dll
 D:\ASP.NET_Core_Web_API\webapiProject\obj\Debug\netcoreapp3.1\webapiProject.pdb
 D:\ASP.NET_Core_Web_API\webapiProject\obj\Debug\netcoreapp3.1\webapiProject.genruntimeconfig.cache
-D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Design.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.DotNet.InternalAbstractions.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.Extensions.DependencyModel.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Microsoft.Extensions.PlatformAbstractions.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\Namotion.Reflection.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\NJsonSchema.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\NSwag.Annotations.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\NSwag.AspNetCore.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\NSwag.Core.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\NSwag.Generation.dll
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\NSwag.Generation.AspNetCore.dll
+D:\ASP.NET_Core_Web_API\webapiProject\obj\Debug\netcoreapp3.1\webapiProject.MvcApplicationPartsAssemblyInfo.cs
+D:\ASP.NET_Core_Web_API\webapiProject\bin\Debug\netcoreapp3.1\webapiProject.xml
+D:\ASP.NET_Core_Web_API\webapiProject\obj\Debug\netcoreapp3.1\webapiProject.xml

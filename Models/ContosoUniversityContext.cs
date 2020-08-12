@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace webapiProject.Models
-{
-    public partial class ContosoUniversityContext : DbContext
-    {
-        public ContosoUniversityContext()
-        {
+namespace webapiProject.Models {
+
+    public partial class ContosoUniversityContext : DbContext {
+
+        public ContosoUniversityContext() {
         }
 
         public ContosoUniversityContext(DbContextOptions<ContosoUniversityContext> options)
-            : base(options)
-        {
+            : base(options) {
         }
 
         public virtual DbSet<Course> Course { get; set; }
@@ -25,19 +25,14 @@ namespace webapiProject.Models
         public virtual DbSet<VwCourseStudents> VwCourseStudents { get; set; }
         public virtual DbSet<VwDepartmentCourseCount> VwDepartmentCourseCount { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+            if (!optionsBuilder.IsConfigured) {
                 optionsBuilder.UseSqlServer("Server=(localdb)\\.;Initial Catalog=ContosoUniversity;integrated security=true;");
             }
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Course>(entity =>
-            {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) {
+            modelBuilder.Entity<Course>(entity => {
                 entity.HasIndex(e => e.DepartmentId)
                     .HasName("IX_DepartmentID");
 
@@ -55,8 +50,7 @@ namespace webapiProject.Models
                     .HasConstraintName("FK_dbo.Course_dbo.Department_DepartmentID");
             });
 
-            modelBuilder.Entity<CourseInstructor>(entity =>
-            {
+            modelBuilder.Entity<CourseInstructor>(entity => {
                 entity.HasKey(e => new { e.CourseId, e.InstructorId })
                     .HasName("PK_dbo.CourseInstructor");
 
@@ -81,8 +75,7 @@ namespace webapiProject.Models
                     .HasConstraintName("FK_dbo.CourseInstructor_dbo.Instructor_InstructorID");
             });
 
-            modelBuilder.Entity<Department>(entity =>
-            {
+            modelBuilder.Entity<Department>(entity => {
                 entity.HasIndex(e => e.InstructorId)
                     .HasName("IX_InstructorID");
 
@@ -107,8 +100,7 @@ namespace webapiProject.Models
                     .HasConstraintName("FK_dbo.Department_dbo.Instructor_InstructorID");
             });
 
-            modelBuilder.Entity<Enrollment>(entity =>
-            {
+            modelBuilder.Entity<Enrollment>(entity => {
                 entity.HasIndex(e => e.CourseId)
                     .HasName("IX_CourseID");
 
@@ -132,8 +124,7 @@ namespace webapiProject.Models
                     .HasConstraintName("FK_dbo.Enrollment_dbo.Person_StudentID");
             });
 
-            modelBuilder.Entity<OfficeAssignment>(entity =>
-            {
+            modelBuilder.Entity<OfficeAssignment>(entity => {
                 entity.HasKey(e => e.InstructorId)
                     .HasName("PK_dbo.OfficeAssignment");
 
@@ -153,8 +144,7 @@ namespace webapiProject.Models
                     .HasConstraintName("FK_dbo.OfficeAssignment_dbo.Instructor_InstructorID");
             });
 
-            modelBuilder.Entity<Person>(entity =>
-            {
+            modelBuilder.Entity<Person>(entity => {
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Discriminator)
@@ -175,8 +165,7 @@ namespace webapiProject.Models
                     .HasMaxLength(50);
             });
 
-            modelBuilder.Entity<VwCourseStudentCount>(entity =>
-            {
+            modelBuilder.Entity<VwCourseStudentCount>(entity => {
                 entity.HasNoKey();
 
                 entity.ToView("vwCourseStudentCount");
@@ -190,8 +179,7 @@ namespace webapiProject.Models
                 entity.Property(e => e.Title).HasMaxLength(50);
             });
 
-            modelBuilder.Entity<VwCourseStudents>(entity =>
-            {
+            modelBuilder.Entity<VwCourseStudents>(entity => {
                 entity.HasNoKey();
 
                 entity.ToView("vwCourseStudents");
@@ -209,8 +197,7 @@ namespace webapiProject.Models
                 entity.Property(e => e.StudentName).HasMaxLength(101);
             });
 
-            modelBuilder.Entity<VwDepartmentCourseCount>(entity =>
-            {
+            modelBuilder.Entity<VwDepartmentCourseCount>(entity => {
                 entity.HasNoKey();
 
                 entity.ToView("vwDepartmentCourseCount");
@@ -224,5 +211,11 @@ namespace webapiProject.Models
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        //public override async Task<int> SaveChangesAsync(CancellationToken ct = new CancellationToken()) {
+        //    var ddd = this;
+        //    int result = await Task.FromResult<int>(1);
+        //    return result;
+        //}
     }
 }
