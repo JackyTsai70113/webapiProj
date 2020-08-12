@@ -99,7 +99,10 @@ namespace webapiProject.Controllers {
 
         // GET: api/Course/Student
         [HttpGet("student")]
-        public async Task<ActionResult<List<VwCourseStudents>>> GetVwCourseStudents() {
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<IEnumerable<VwCourseStudents>>> GetCourseStudents() {
             string sql =
                 $"SELECT TOP (1000) " +
                 $"  [DepartmentID], [DepartmentName], [CourseID], " +
@@ -108,7 +111,7 @@ namespace webapiProject.Controllers {
 
             var vwCourseStudents = _context
                 .VwCourseStudents
-                .FromSqlRaw(sql).ToList();
+                .FromSqlRaw(sql).ToArray();
 
             if (!vwCourseStudents.Any()) {
                 return NoContent();
@@ -122,7 +125,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<List<VwCourseStudentCount>>> GetVwCourseStudentCount() {
+        public async Task<ActionResult<IEnumerable<VwCourseStudentCount>>> GetCourseStudentCount() {
             string sql =
                 $"SELECT TOP (1000) " +
                 $"  [DepartmentID], [Name], [CourseID], " +
@@ -131,7 +134,7 @@ namespace webapiProject.Controllers {
 
             var vwCourseStudentCount = _context
                 .VwCourseStudentCount
-                .FromSqlRaw(sql).ToList();
+                .FromSqlRaw(sql).ToArray();
 
             if (!vwCourseStudentCount.Any()) {
                 return NoContent();

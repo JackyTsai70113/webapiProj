@@ -128,6 +128,28 @@ namespace webapiProject.Controllers {
             return department;
         }
 
+        // GET: api/Department/Course/Count
+        [HttpGet("course/count")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult<IEnumerable<VwDepartmentCourseCount>>> GetDepartmentCourseCount() {
+            string sql =
+                $"SELECT TOP (1000) " +
+                $"  [DepartmentID], [Name], [CourseCount]" +
+                $"FROM [dbo].[vwDepartmentCourseCount]";
+
+            var vwDepartmentCourseCount = _context
+                .VwDepartmentCourseCount
+                .FromSqlRaw(sql).ToArray();
+
+            if (!vwDepartmentCourseCount.Any()) {
+                return NoContent();
+            }
+
+            return vwDepartmentCourseCount;
+        }
+
         private bool DepartmentExists(int id) {
             return _context.Department.Any(e => e.DepartmentId == id);
         }
