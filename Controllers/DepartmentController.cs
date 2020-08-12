@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using webapiProject.Models;
 
@@ -52,10 +53,22 @@ namespace webapiProject.Controllers {
                 return BadRequest();
             }
 
-            _context.Entry(department).State = EntityState.Modified;
+            //_context.Entry(department).State = EntityState.Modified;
 
             try {
-                await _context.SaveChangesAsync();
+                //await _context.SaveChangesAsync();
+
+                var sql = $"EXEC [dbo].[Department_Update] @DepartmentId, " +
+                    $"@Name, @Budget, @StartDate, @InstructorID, @RowVersion_Original";
+                var parameters = new List<SqlParameter> {
+                    new SqlParameter("@DepartmentId", department.DepartmentId),
+                    new SqlParameter("@Name", department.Name),
+                    new SqlParameter("@Budget", department.Budget),
+                    new SqlParameter("@StartDate", department.StartDate),
+                    new SqlParameter("@InstructorId", department.InstructorId),
+                    new SqlParameter("@RowVersion_Original", department.RowVersion)
+                };
+                _context.Database.ExecuteSqlRaw(sql, parameters);
             } catch (DbUpdateConcurrencyException) {
                 if (!DepartmentExists(id)) {
                     return NotFound();
@@ -74,8 +87,19 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<Department>> PostDepartment(Department department) {
-            _context.Department.Add(department);
-            await _context.SaveChangesAsync();
+            //_context.Department.Add(department);
+            //await _context.SaveChangesAsync();
+
+            var outDepartment = _context.Department.FromSqlRaw(
+                "EXEC [dbo].[Department_Insert] {0}, {1}, {2}, {3}",
+                department.Name,
+                department.Budget,
+                department.StartDate,
+                department.InstructorId)
+                .AsEnumerable().FirstOrDefault();
+
+            department.DepartmentId = outDepartment.DepartmentId;
+            department.RowVersion = outDepartment.RowVersion;
 
             return CreatedAtAction("GetDepartment", new { id = department.DepartmentId }, department);
         }
@@ -91,8 +115,15 @@ namespace webapiProject.Controllers {
                 return NotFound();
             }
 
-            _context.Department.Remove(department);
-            await _context.SaveChangesAsync();
+            //_context.Department.Remove(department);
+            //await _context.SaveChangesAsync();
+
+            var sql = $"EXEC [dbo].[Department_Delete] @DepartmentId, @RowVersion_Original";
+            var parameters = new List<SqlParameter> {
+                new SqlParameter("@DepartmentId", department.DepartmentId),
+                new SqlParameter("@RowVersion_Original", department.RowVersion)
+            };
+            _context.Database.ExecuteSqlRaw(sql, parameters);
 
             return department;
         }
