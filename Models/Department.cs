@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace webapiProject.Models
-{
-    public partial class Department
-    {
-        public Department()
-        {
+namespace webapiProject.Models {
+
+    public partial class Department {
+
+        public Department() {
             Course = new HashSet<Course>();
         }
 
@@ -16,6 +15,7 @@ namespace webapiProject.Models
         public DateTime StartDate { get; set; }
         public int? InstructorId { get; set; }
         public byte[] RowVersion { get; set; }
+        public DateTime DateModified { get; set; }
 
         public virtual Person Instructor { get; set; }
         public virtual ICollection<Course> Course { get; set; }
