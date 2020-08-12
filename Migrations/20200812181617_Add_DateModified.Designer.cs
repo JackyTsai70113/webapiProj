@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using webapiProject.Models;
 
 namespace webapiProject.Migrations
 {
     [DbContext(typeof(ContosoUniversityContext))]
-    partial class ContosoUniversityContextModelSnapshot : ModelSnapshot
+    [Migration("20200812181617_Add_DateModified")]
+    partial class Add_DateModified
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
