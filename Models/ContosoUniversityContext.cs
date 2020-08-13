@@ -36,6 +36,8 @@ namespace webapiProject.Models {
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.Entity<Course>(entity => {
+                entity.HasQueryFilter(e => e.IsDeleted == false);
+
                 entity.HasIndex(e => e.DepartmentId)
                     .HasName("IX_DepartmentID");
 
@@ -79,6 +81,8 @@ namespace webapiProject.Models {
             });
 
             modelBuilder.Entity<Department>(entity => {
+                entity.HasQueryFilter(e => e.IsDeleted == false);
+
                 entity.HasIndex(e => e.InstructorId)
                     .HasName("IX_InstructorID");
 
@@ -148,6 +152,8 @@ namespace webapiProject.Models {
             });
 
             modelBuilder.Entity<Person>(entity => {
+                entity.HasQueryFilter(e => e.IsDeleted == false);
+
                 entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.Discriminator)
@@ -216,11 +222,10 @@ namespace webapiProject.Models {
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {
-            var entityEntryList = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified).ToList();
-
-            // Set DateModified DateTime.Now
+            // Modified State: Set DateModified DateTime.Now
+            var modifiedEntityEntrys = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified).ToList();
             DateTime now = DateTime.Now;
-            foreach (EntityEntry entry in entityEntryList) {
+            foreach (EntityEntry entry in modifiedEntityEntrys) {
                 if (typeof(Course).IsInstanceOfType(entry.Entity)) {
                     var course = (Course)entry.Entity;
                     course.DateModified = now;
@@ -232,6 +237,23 @@ namespace webapiProject.Models {
                     person.DateModified = now;
                 }
             }
+
+            // Deleted State: Set IsDeleted true
+            var deletedEntityEntrys = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Deleted).ToList();
+            foreach (EntityEntry entry in deletedEntityEntrys) {
+                if (typeof(Course).IsInstanceOfType(entry.Entity)) {
+                    var course = (Course)entry.Entity;
+                    course.IsDeleted = true;
+                } else if (typeof(Department).IsInstanceOfType(entry.Entity)) {
+                    var department = (Department)entry.Entity;
+                    department.IsDeleted = true;
+                } else if (typeof(Person).IsInstanceOfType(entry.Entity)) {
+                    var person = (Person)entry.Entity;
+                    person.IsDeleted = true;
+                }
+                entry.State = EntityState.Modified;
+            }
+
             return base.SaveChangesAsync(cancellationToken);
         }
     }
