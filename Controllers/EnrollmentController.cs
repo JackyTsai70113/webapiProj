@@ -20,7 +20,7 @@ namespace webapiProject.Controllers {
 
         // GET: api/Enrollment
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Enrollment>>> GetEnrollment() {
+        public async Task<ActionResult<IEnumerable<Enrollment>>> GetEnrollmentAsync() {
             return await _context.Enrollment.ToListAsync();
         }
 
@@ -29,7 +29,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Enrollment>> GetEnrollment(int id) {
+        public async Task<ActionResult<Enrollment>> GetEnrollmentAsync(int id) {
             var enrollment = await _context.Enrollment.FindAsync(id);
 
             if (enrollment == null) {
@@ -47,7 +47,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> PutEnrollment(int id, Enrollment enrollment) {
+        public async Task<IActionResult> PutEnrollmentAsync(int id, Enrollment enrollment) {
             if (id != enrollment.EnrollmentId) {
                 return BadRequest();
             }
@@ -73,8 +73,8 @@ namespace webapiProject.Controllers {
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Enrollment>> PostEnrollment(Enrollment enrollment) {
-            _context.Enrollment.Add(enrollment);
+        public async Task<ActionResult<Enrollment>> PostEnrollmentAsync(Enrollment enrollment) {
+            await _context.Enrollment.AddAsync(enrollment);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEnrollment", new { id = enrollment.EnrollmentId }, enrollment);
@@ -85,7 +85,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Enrollment>> DeleteEnrollment(int id) {
+        public async Task<ActionResult<Enrollment>> DeleteEnrollmentAsync(int id) {
             var enrollment = await _context.Enrollment.FindAsync(id);
             if (enrollment == null) {
                 return NotFound();

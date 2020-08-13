@@ -1,11 +1,9 @@
-using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using webapiProject.Models;
 
 namespace webapiProject.Controllers {
@@ -21,7 +19,7 @@ namespace webapiProject.Controllers {
 
         // GET: api/Department
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartment() {
+        public async Task<ActionResult<IEnumerable<Department>>> GetDepartmentAsync() {
             return await _context.Department.ToListAsync();
         }
 
@@ -30,7 +28,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Department>> GetDepartment(int id) {
+        public async Task<ActionResult<Department>> GetDepartmentAsync(int id) {
             var department = await _context.Department.FindAsync(id);
 
             if (department == null) {
@@ -48,33 +46,14 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> PutDepartment(int id, Department department) {
+        public async Task<IActionResult> PutDepartmentAsync(int id, Department department) {
             if (id != department.DepartmentId) {
                 return BadRequest();
             }
 
-            //_context.Entry(department).State = EntityState.Modified;
+            _context.Entry(department).State = EntityState.Modified;
 
             try {
-                //await _context.SaveChangesAsync();
-
-                var sql =
-                    $"EXEC [dbo].[Department_Update] " +
-                    $"@DepartmentId, @Name, @Budget, " +
-                    $"@StartDate, @InstructorID, @RowVersion_Original";
-                var parameters = new List<SqlParameter> {
-                    new SqlParameter("@DepartmentId", id),
-                    new SqlParameter("@Name", department.Name),
-                    new SqlParameter("@Budget", department.Budget),
-                    new SqlParameter("@StartDate", department.StartDate),
-                    new SqlParameter("@InstructorId", department.InstructorId),
-                    new SqlParameter("@RowVersion_Original", department.RowVersion)
-                };
-                _context.Database.ExecuteSqlRaw(sql, parameters);
-
-                // Modified
-                department = await _context.Department.FindAsync(id);
-                _context.Entry(department).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             } catch (DbUpdateConcurrencyException) {
                 if (!DepartmentExists(id)) {
@@ -93,20 +72,9 @@ namespace webapiProject.Controllers {
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Department>> PostDepartment(Department department) {
-            //_context.Department.Add(department);
-            //await _context.SaveChangesAsync();
-
-            var outDepartment = _context.Department.FromSqlRaw(
-                "EXEC [dbo].[Department_Insert] {0}, {1}, {2}, {3}",
-                department.Name,
-                department.Budget,
-                department.StartDate,
-                department.InstructorId)
-                .AsEnumerable().FirstOrDefault();
-
-            department.DepartmentId = outDepartment.DepartmentId;
-            department.RowVersion = outDepartment.RowVersion;
+        public async Task<ActionResult<Department>> PostDepartmentAsync(Department department) {
+            await _context.Department.AddAsync(department);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetDepartment", new { id = department.DepartmentId }, department);
         }
@@ -116,21 +84,14 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Department>> DeleteDepartment(int id) {
+        public async Task<ActionResult<Department>> DeleteDepartmentAsync(int id) {
             var department = await _context.Department.FindAsync(id);
             if (department == null) {
                 return NotFound();
             }
 
-            //_context.Department.Remove(department);
-            //await _context.SaveChangesAsync();
-
-            var sql = $"EXEC [dbo].[Department_Delete] @DepartmentId, @RowVersion_Original";
-            var parameters = new List<SqlParameter> {
-                new SqlParameter("@DepartmentId", department.DepartmentId),
-                new SqlParameter("@RowVersion_Original", department.RowVersion)
-            };
-            _context.Database.ExecuteSqlRaw(sql, parameters);
+            _context.Department.Remove(department);
+            await _context.SaveChangesAsync();
 
             return department;
         }
@@ -140,7 +101,7 @@ namespace webapiProject.Controllers {
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<IEnumerable<VwDepartmentCourseCount>>> GetDepartmentCourseCount() {
+        public ActionResult<IEnumerable<VwDepartmentCourseCount>> GetDepartmentCourseCount() {
             string sql =
                 $"SELECT TOP (1000) " +
                 $"  [DepartmentID], [Name], [CourseCount]" +

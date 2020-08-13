@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using webapiProject.Models;
 
 namespace webapiProject.Controllers {
@@ -20,7 +19,7 @@ namespace webapiProject.Controllers {
 
         // GET: api/Person
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Person>>> GetPerson() {
+        public async Task<ActionResult<IEnumerable<Person>>> GetPersonAsync() {
             return await _context.Person.ToListAsync();
         }
 
@@ -29,7 +28,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Person>> GetPerson(int id) {
+        public async Task<ActionResult<Person>> GetPersonAsync(int id) {
             var person = await _context.Person.FindAsync(id);
 
             if (person == null) {
@@ -47,7 +46,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> PutPerson(int id, Person person) {
+        public async Task<IActionResult> PutPersonAsync(int id, Person person) {
             if (id != person.Id) {
                 return BadRequest();
             }
@@ -73,8 +72,8 @@ namespace webapiProject.Controllers {
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Person>> PostPerson(Person person) {
-            _context.Person.Add(person);
+        public async Task<ActionResult<Person>> PostPersonAsync(Person person) {
+            await _context.Person.AddAsync(person);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPerson", new { id = person.Id }, person);
@@ -85,7 +84,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Person>> DeletePerson(int id) {
+        public async Task<ActionResult<Person>> DeletePersonAsync(int id) {
             var person = await _context.Person.FindAsync(id);
             if (person == null) {
                 return NotFound();

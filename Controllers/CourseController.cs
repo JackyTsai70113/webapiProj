@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using webapiProject.Models;
 
 namespace webapiProject.Controllers {
@@ -20,7 +19,7 @@ namespace webapiProject.Controllers {
 
         // GET: api/Course
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourse() {
+        public async Task<ActionResult<IEnumerable<Course>>> GetCourseAsync() {
             return await _context.Course.ToListAsync();
         }
 
@@ -29,7 +28,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Course>> GetCourse(int id) {
+        public async Task<ActionResult<Course>> GetCourseAsync(int id) {
             var course = await _context.Course.FindAsync(id);
 
             if (course == null) {
@@ -47,7 +46,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<IActionResult> PutCourse(int id, Course course) {
+        public async Task<IActionResult> PutCourseAsync(int id, Course course) {
             if (id != course.CourseId) {
                 return BadRequest();
             }
@@ -73,8 +72,8 @@ namespace webapiProject.Controllers {
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Course>> PostCourse(Course course) {
-            _context.Course.Add(course);
+        public async Task<ActionResult<Course>> PostCourseAsync(Course course) {
+            await _context.Course.AddAsync(course);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCourse", new { id = course.CourseId }, course);
@@ -85,7 +84,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Course>> DeleteCourse(int id) {
+        public async Task<ActionResult<Course>> DeleteCourseAsync(int id) {
             var course = await _context.Course.FindAsync(id);
             if (course == null) {
                 return NotFound();
@@ -102,7 +101,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<VwCourseStudents>>> GetCourseStudents() {
+        public ActionResult<IEnumerable<VwCourseStudents>> GetCourseStudents() {
             string sql =
                 $"SELECT TOP (1000) " +
                 $"  [DepartmentID], [DepartmentName], [CourseID], " +
@@ -125,7 +124,7 @@ namespace webapiProject.Controllers {
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<VwCourseStudentCount>>> GetCourseStudentCount() {
+        public ActionResult<IEnumerable<VwCourseStudentCount>> GetCourseStudentCount() {
             string sql =
                 $"SELECT TOP (1000) " +
                 $"  [DepartmentID], [Name], [CourseID], " +

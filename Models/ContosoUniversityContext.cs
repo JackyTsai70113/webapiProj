@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace webapiProject.Models {
 
@@ -222,36 +222,79 @@ namespace webapiProject.Models {
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken()) {
-            // Modified State: Set DateModified DateTime.Now
-            var modifiedEntityEntrys = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified).ToList();
             DateTime now = DateTime.Now;
-            foreach (EntityEntry entry in modifiedEntityEntrys) {
-                if (typeof(Course).IsInstanceOfType(entry.Entity)) {
-                    var course = (Course)entry.Entity;
-                    course.DateModified = now;
-                } else if (typeof(Department).IsInstanceOfType(entry.Entity)) {
-                    var department = (Department)entry.Entity;
-                    department.DateModified = now;
-                } else if (typeof(Person).IsInstanceOfType(entry.Entity)) {
-                    var person = (Person)entry.Entity;
-                    person.DateModified = now;
-                }
-            }
+            var entityEntrys = ChangeTracker.Entries();
+            foreach (EntityEntry entry in entityEntrys) {
 
-            // Deleted State: Set IsDeleted true
-            var deletedEntityEntrys = this.ChangeTracker.Entries().Where(x => x.State == EntityState.Deleted).ToList();
-            foreach (EntityEntry entry in deletedEntityEntrys) {
+                #region Department entity
+
+                if (typeof(Department).IsInstanceOfType(entry.Entity)) {
+                    var department = (Department)entry.Entity;
+                    if (entry.State == EntityState.Added) {
+                        var outDepartment = this.Department.FromSqlRaw(
+                            $"EXEC [dbo].[Department_Insert] " +
+                            $"'{ department.Name }', '{ department.Budget }', " +
+                            $"'{ department.StartDate }', '{ department.InstructorId }'")
+                        .IgnoreQueryFilters().AsEnumerable().FirstOrDefault();
+
+                        department.DepartmentId = outDepartment.DepartmentId;
+                        department.RowVersion = outDepartment.RowVersion;
+                    } else if (entry.State == EntityState.Modified) {
+                        var sql =
+                            $"EXEC [dbo].[Department_Update] " +
+                            $"@DepartmentId, @Name, @Budget, " +
+                            $"@StartDate, @InstructorID, " +
+                            $"@RowVersion_Original, @DateModified";
+                        var parameters = new List<SqlParameter> {
+                            new SqlParameter("@DepartmentId", department.DepartmentId),
+                            new SqlParameter("@Name", department.Name),
+                            new SqlParameter("@Budget", department.Budget),
+                            new SqlParameter("@StartDate", department.StartDate),
+                            new SqlParameter("@InstructorId", department.InstructorId),
+                            new SqlParameter("@RowVersion_Original", department.RowVersion),
+                            new SqlParameter("@DateModified", now)
+                        };
+                        Database.ExecuteSqlRaw(sql, parameters);
+                    } else if (entry.State == EntityState.Deleted) {
+                        var sql = $"EXEC [dbo].[Department_Delete] @DepartmentId, @RowVersion_Original";
+                        var parameters = new List<SqlParameter> {
+                            new SqlParameter("@DepartmentId", department.DepartmentId),
+                            new SqlParameter("@RowVersion_Original", department.RowVersion)
+                        };
+                        Database.ExecuteSqlRaw(sql, parameters);
+                    }
+                    entry.State = EntityState.Detached;
+                }
+
+                #endregion Department entity
+
+                #region Course entity
+
                 if (typeof(Course).IsInstanceOfType(entry.Entity)) {
                     var course = (Course)entry.Entity;
-                    course.IsDeleted = true;
-                } else if (typeof(Department).IsInstanceOfType(entry.Entity)) {
-                    var department = (Department)entry.Entity;
-                    department.IsDeleted = true;
-                } else if (typeof(Person).IsInstanceOfType(entry.Entity)) {
-                    var person = (Person)entry.Entity;
-                    person.IsDeleted = true;
+                    if (entry.State == EntityState.Modified) {
+                        course.DateModified = now;
+                    } else if (entry.State == EntityState.Deleted) {
+                        course.IsDeleted = true;
+                        entry.State = EntityState.Modified;
+                    }
                 }
-                entry.State = EntityState.Modified;
+
+                #endregion Course entity
+
+                #region Person entity
+
+                if (typeof(Person).IsInstanceOfType(entry.Entity)) {
+                    var person = (Person)entry.Entity;
+                    if (entry.State == EntityState.Modified) {
+                        person.DateModified = now;
+                    } else if (entry.State == EntityState.Deleted) {
+                        person.IsDeleted = true;
+                        entry.State = EntityState.Modified;
+                    }
+                }
+
+                #endregion Person entity
             }
 
             return base.SaveChangesAsync(cancellationToken);
